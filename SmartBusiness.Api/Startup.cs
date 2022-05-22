@@ -33,11 +33,6 @@ namespace SmartBusiness.Api
 
         public IConfiguration Configuration { get; }
 
-<<<<<<< HEAD
-        
-=======
-        // This method gets called by the runtime. Use this method to add services to the container.
->>>>>>> f644ed604b15a79b2871f5491fd65d3a93eb555c
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration["SmartBusiness:ConnectionString"];
