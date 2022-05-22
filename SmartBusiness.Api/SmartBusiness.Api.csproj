@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
+    <ProjectReference Include="..\DapperExt\DapperExt.csproj" />
+=======
+>>>>>>> f644ed604b15a79b2871f5491fd65d3a93eb555c
     <ProjectReference Include="..\SmartBusiness.Application\SmartBusiness.AppServices.csproj" />
     <ProjectReference Include="..\SmartBusiness.Infra\SmartBusiness.Infra.csproj" />
   </ItemGroup>
