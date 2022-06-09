@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DapperExt\DapperExt.csproj" />
+    <ProjectReference Include="..\DapperExt\DapperExt.csproj" />
     <ProjectReference Include="..\SmartBusiness.Domain\SmartBusiness.Domain.csproj" />
   </ItemGroup>
 

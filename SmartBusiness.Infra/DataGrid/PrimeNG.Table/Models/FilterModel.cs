@@ -7,9 +7,9 @@ namespace SmartBusiness.Infra.DataGrid.PrimeNG.Table.Models
     public class FilterModel
     {
         /// <summary>
-        /// Filtra o objeto com campo como chave e valor de filtro, filtra matchMode como valor
+        /// Filtra uma coluna conforme o valor passado em FilterColumn.Value
         /// </summary>
-        public Dictionary<string, object> Filters { get; set; }
+        public List<FilterColumn> FiltersColumns { get; set; }
 
         /// <summary>
         /// Valor do filtro global se disponível
@@ -17,14 +17,19 @@ namespace SmartBusiness.Infra.DataGrid.PrimeNG.Table.Models
         public string globalFilter { get; set; }
 
         /// <summary>
-        /// Primeira linha
+        /// Indice da linha por onde deve começar a contagem da paginação
         /// </summary>
-        public int First { get; set; }
+        public int FirstRowIndex { get; set; }
 
         /// <summary>
         /// Número de linhas por página
         /// </summary>
-        public int Rows { get; set; }
+        public int RowsPerPage { get; set; }
+
+        /// <summary>
+        /// Página Atual
+        /// </summary>
+        public int CurrentPage { get; set; }
 
         /// <summary>
         /// Nome do campo para ordenar no modo de ordenação simples
@@ -37,8 +42,15 @@ namespace SmartBusiness.Infra.DataGrid.PrimeNG.Table.Models
         public int SortOrder { get; set; }
 
         /// <summary>
-        /// Uma matriz de objetos SortMeta usados na classificação de várias colunas. Cada SortMeta possui propriedades de campo e ordem.
+        /// Uma matriz de objetos FilterSorter usados na classificação de várias colunas. Cada Sorter possui propriedades de campo e ordem.
         /// </summary>
-        public List<FilterSortMeta> MultiSortMeta { get; set; }
+        public List<FilterSorter> MultiSort { get; set; }
+    }
+
+    public class FilterColumn
+    {
+        public string ColumnName { get; set; } 
+        public object Value { get; set; }
+        public string FilterMatchMode { get; set; }
     }
 }

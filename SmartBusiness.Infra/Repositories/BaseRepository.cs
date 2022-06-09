@@ -161,61 +161,49 @@ namespace SmartBusiness.Infra.Repositories
                 {
 
                     orderBy = string.Join(",", filterManager.GetOrderByField(filterModel.SortField));
-                    //!columnSort.IsNullOrEmpty() ? columnSort : string.Empty;
+
+                    if (!string.IsNullOrEmpty(orderBy) )
+                    {
+                        orderBy += filterModel.SortOrder == 1 ? " Asc" : " Desc";
+                    }
+
                 }
 
-                //if (!string.IsNullOrEmpty(searchRequest.Search?.Value))
-                //{
-                //    var whereClause = string.Join("OR", GetSearchClause(searchRequest));
+                if (filterModel.FiltersColumns?.Count > 0 )
+                {
+                    var condicao = filterManager.GetFilterClause(filterModel.FiltersColumns);
 
-                //    if (!string.IsNullOrEmpty(whereClause))
-                //    {
+                    if (condicao != null && condicao.Any())
+                    {
+                        var whereClause = string.Join(" AND ", condicao);
 
-                //        sqlWhere = $"Where {whereClause} ";
-                //    }
-                //}
-                //else if (searchRequest.Filter?.Count > 0)
-                //{
+                        if (!string.IsNullOrEmpty(whereClause) && sqlWhere.IsNullOrEmpty())
+                        {
+                            sqlWhere = $"Where {whereClause} ";
+                        }
+                        else if (!string.IsNullOrEmpty(whereClause) && !sqlWhere.IsNullOrEmpty())
+                        {
+                            sqlWhere += $" AND  ({whereClause})"; 
+                        }
+                    }
+                }
 
-                //    var condicao = GetFilterClause(searchRequest);
-
-                //    if (condicao != null && condicao.Any())
-                //    {
-                //        var whereClause = string.Join(" OR ", condicao);
-
-                //        if (!string.IsNullOrEmpty(whereClause))
-                //        {
-                //            sqlWhere = $"Where {whereClause} ";
-                //        }
-                //    }
-                //}
-
-                ////if (string.IsNullOrEmpty(sqlWhere))
-                ////{
-                ////    sqlWhere = $"Where id_tenant = {_idTenant}";
-                ////}
-                ////else
-                ////{
-                ////    sqlWhere += $" and id_tenant = {_idTenant}";
-                ////}
-
-                //var orderBy = string.Empty;
-
-                //if (searchRequest.Order != null)
-                //{
-                //    orderBy = "ORDER BY " + string.Join(",", GetOrderByClause(searchRequest));
-                //}
-
-                var startRowIndex = filterModel.First == 0 ? 1 : filterModel.First;
-                var pageSize = filterModel.Rows;
+                var startRowIndex = filterModel.FirstRowIndex == 0 ? 1 : filterModel.FirstRowIndex;
+                var pageSize = filterModel.RowsPerPage;
 
                 var pageNumber = 1;
 
-                if (filterModel.First > 0)
+                if (filterModel.CurrentPage > 0)
                 {
-                    pageNumber = (startRowIndex + pageSize - 1) / pageSize;
+                    pageNumber = filterModel.CurrentPage;
                 }
-
+                else
+                {
+                    if (filterModel.FirstRowIndex > 0)
+                    {
+                        pageNumber = (startRowIndex + pageSize - 1) / pageSize;
+                    }
+                }
                 using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
                 {
 
@@ -228,7 +216,7 @@ namespace SmartBusiness.Infra.Repositories
                     totalResults = connection.RecordCount<T>(sqlWhere);
 
                     
-                    result = connection.GetListPaged<T>(pageNumber, filterModel.Rows, sqlWhere, orderBy);
+                    result = connection.GetListPaged<T>(pageNumber, filterModel.RowsPerPage, sqlWhere, orderBy);
 
                     //Aguarda de 20 a 25 ms para liberar a conexão (bug do Npgsql)
                     for (int i = 1; i < 50; i++)
@@ -365,56 +353,7 @@ namespace SmartBusiness.Infra.Repositories
 
        
 
-        //private static IEnumerable<string> GetFilterClause(SearchRequest searchRequest)
-        //{
-
-        //    object[] arrFilter = searchRequest.Filter.OfType<object>().ToArray();
-
-        //    for (int i = 0; i < arrFilter.Length; i++)
-        //    {
-
-        //        var item = arrFilter[i];
-
-        //        if (item != null && item.GetType() != typeof(string))
-        //        {
-        //            object[] arrFiltro = null;
-
-        //            try
-        //            {
-        //                arrFiltro = ((IEnumerable)item).Cast<object>().Select(x => x).ToArray();
-        //            }
-        //            catch (Exception)
-        //            {
-
-        //            }
-
-
-        //            if (arrFiltro != null)
-        //            {
-        //                var coluna = arrFiltro[0]?.ToString();
-
-        //                var condicao = arrFiltro[1]?.ToString();
-
-        //                var valor = arrFiltro[2]?.ToString();
-
-        //                if (condicao == "startswith")
-        //                {
-        //                    yield return $"({coluna.ToUnderscoreCase()} LIKE '{valor}%')";
-        //                }
-        //                else
-        //                {
-        //                    yield return $"({coluna.ToUnderscoreCase()} LIKE '%{valor}%')";
-        //                }
-        //            }
-        //            else
-        //            {
-        //                yield return string.Empty;
-        //            }
-
-        //        }
-        //    }
-
-        //}
+       
 
         public int? Insert(T obj)
         {
